@@ -7,8 +7,10 @@ import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +38,25 @@ public class UserController {
         User user = new User();
         user.setId(id);
         user.setUsername("tom");
+        return user;
+    }
+
+    /**
+     * 前后端传递birthday参数时都使用时间戳
+     * @Valid启用参数校验与BindingResult配合使用
+     * */
+    @PostMapping
+    public User createUser(@Valid @RequestBody User user, BindingResult errors) {
+
+        if(errors.hasErrors()) {
+            errors.getAllErrors().forEach(System.out::println);
+        }
+
+        System.out.println(user.getId());
+        System.out.println(user.getUsername());
+        System.out.println(user.getPassword());
+        System.out.println(user.getBirthday());
+        user.setId(1L);
         return user;
     }
 

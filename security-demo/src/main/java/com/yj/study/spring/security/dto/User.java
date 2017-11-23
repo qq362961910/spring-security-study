@@ -1,6 +1,9 @@
 package com.yj.study.spring.security.dto;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import org.hibernate.validator.constraints.NotBlank;
+
+import java.util.Date;
 
 public class User {
 
@@ -8,14 +11,18 @@ public class User {
 
     public interface UserDetailView extends UserSimpleView {}
 
-    @JsonView(UserDetailView.class)
+    @JsonView(UserSimpleView.class)
     private Long id;
 
     @JsonView(UserSimpleView.class)
     private String username;
 
+    @NotBlank
     @JsonView(UserDetailView.class)
     private String password;
+
+    @JsonView(UserSimpleView.class)
+    private Date birthday;
 
 
     public Long getId() {
@@ -40,5 +47,13 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Date getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(Date birthday) {
+        this.birthday = birthday;
     }
 }

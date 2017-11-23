@@ -66,5 +66,18 @@ public class UserControllerTest {
         System.out.println(result);
     }
 
+    @Test
+    public void whenCreateSuccess() throws Exception {
+        String content = "{\"username\":\"tom\",\"password\":null,\"birthday\":"+ System.currentTimeMillis() +"}";
+        String result = mockMvc.perform(MockMvcRequestBuilders.post("/user")
+            .contentType(MediaType.APPLICATION_JSON_UTF8)
+            .content(content))
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1))
+            .andReturn().getResponse().getContentAsString();
+        System.out.println(result);
+
+    }
+
 
 }
