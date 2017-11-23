@@ -1,14 +1,13 @@
 package com.yj.study.spring.security.controller;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.yj.study.spring.security.dto.User;
 import com.yj.study.spring.security.dto.UserQueryCondition;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +16,8 @@ import java.util.List;
 @RestController
 public class UserController {
 
-    @RequestMapping(value = "", method = RequestMethod.GET)
+    @JsonView(User.UserSimpleView.class)
+    @GetMapping
     public List<User> query(UserQueryCondition condition, @PageableDefault(page = 1, size = 5, sort = "username,desc") Pageable pageable) {
         System.out.println(ReflectionToStringBuilder.toString(condition, ToStringStyle.MULTI_LINE_STYLE));
         System.out.println(ReflectionToStringBuilder.toString(pageable, ToStringStyle.MULTI_LINE_STYLE));
@@ -28,4 +28,16 @@ public class UserController {
         userList.add(user);
         return userList;
     }
+
+    @JsonView(User.UserDetailView.class)
+    //正则限制: 只能接受一个数字
+    @GetMapping(value = "/{id:\\d+}")
+    public User getInfo(@PathVariable Long id) {
+        User user = new User();
+        user.setId(id);
+        user.setUsername("tom");
+        return user;
+    }
+
+
 }
