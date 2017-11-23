@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://192.168.14.40:3306/blog?useSSL=false&characterEncoding=UTF-8&createDatabaseIfNotExist=true&useUnicode=true
+    username: blog
+    password: blog
+  session:
+    store-type: none
+security:
+  basic:
+    enabled: false
