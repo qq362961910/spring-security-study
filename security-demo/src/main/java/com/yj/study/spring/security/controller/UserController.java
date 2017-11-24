@@ -3,6 +3,7 @@ package com.yj.study.spring.security.controller;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.yj.study.spring.security.dto.User;
 import com.yj.study.spring.security.dto.UserQueryCondition;
+import com.yj.study.spring.security.exception.UserNotException;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.springframework.data.domain.Pageable;
@@ -46,11 +47,11 @@ public class UserController {
      * @Valid启用参数校验与BindingResult配合使用
      * */
     @PostMapping
-    public User createUser(@Valid @RequestBody User user, BindingResult errors) {
+    public User createUser(@Valid @RequestBody User user) {
 
-        if(errors.hasErrors()) {
-            errors.getAllErrors().forEach(System.out::println);
-        }
+//        if(errors.hasErrors()) {
+//            errors.getAllErrors().forEach(System.out::println);
+//        }
 
         System.out.println(user.getId());
         System.out.println(user.getUsername());
@@ -78,5 +79,14 @@ public class UserController {
         System.out.println("delete: " + userId);
     }
 
+    @RequestMapping("/e")
+    public void error() {
+        throw new RuntimeException("server error");
+    }
+
+    @RequestMapping("/not_exist/{id:\\d+}")
+    public User notExist(@PathVariable("id") Long userId) {
+        throw new UserNotException(userId);
+    }
 
 }
