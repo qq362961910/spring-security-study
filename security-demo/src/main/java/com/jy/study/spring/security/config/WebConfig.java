@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
@@ -21,10 +22,19 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(timeInterceptor);
+//        registry.addInterceptor(timeInterceptor);
     }
 
-    @Bean
+    @Override
+    public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
+        //用来配置异步请求拦截器
+        configurer.registerCallableInterceptors();
+        configurer.registerDeferredResultInterceptors();
+        //配置异步线程池,默认spring是不会复用已创建的线程
+        //configurer.setTaskExecutor();
+    }
+
+    //    @Bean
     public FilterRegistrationBean thirdPartyFilter() {
         FilterRegistrationBean registrationBean = new FilterRegistrationBean();
         ThirdPartyFilter thirdPartyFilter = new ThirdPartyFilter();
