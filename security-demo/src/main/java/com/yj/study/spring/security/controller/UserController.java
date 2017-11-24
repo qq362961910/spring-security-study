@@ -60,5 +60,23 @@ public class UserController {
         return user;
     }
 
+    @PutMapping("/{id:\\d+}")
+    public User updateUser(@PathVariable Long id, @Valid @RequestBody User user, BindingResult errors) {
+        if(errors.hasErrors()) {
+            errors.getAllErrors().forEach(error -> System.out.println(error.getDefaultMessage()));
+        }
+        System.out.println(user.getId());
+        System.out.println(user.getUsername());
+        System.out.println(user.getPassword());
+        System.out.println(user.getBirthday());
+        user.setId(id);
+        return user;
+    }
+
+    @DeleteMapping("/{id:\\d+}")
+    public void delete(@PathVariable("id") Long userId) {
+        System.out.println("delete: " + userId);
+    }
+
 
 }

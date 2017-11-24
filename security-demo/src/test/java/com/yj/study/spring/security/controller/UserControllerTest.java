@@ -76,8 +76,24 @@ public class UserControllerTest {
             .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1))
             .andReturn().getResponse().getContentAsString();
         System.out.println(result);
-
     }
 
+    @Test
+    public void whenUpdateSuccess() throws Exception {
+        String content = "{\"username\":\"tom\",\"password\":null,\"birthday\":"+ (System.currentTimeMillis() + 100000) +"}";
+        String result = mockMvc.perform(MockMvcRequestBuilders.put("/user/1")
+            .contentType(MediaType.APPLICATION_JSON_UTF8)
+            .content(content))
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1))
+            .andReturn().getResponse().getContentAsString();
+        System.out.println(result);
+    }
+
+    @Test
+    public void whenDeleteSuccess() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete("/user/1").contentType(MediaType.APPLICATION_JSON_UTF8))
+            .andExpect(MockMvcResultMatchers.status().isOk());
+    }
 
 }

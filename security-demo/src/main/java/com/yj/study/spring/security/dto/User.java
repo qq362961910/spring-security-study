@@ -1,8 +1,10 @@
 package com.yj.study.spring.security.dto;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.yj.study.spring.security.validator.MyConstraint;
 import org.hibernate.validator.constraints.NotBlank;
 
+import javax.validation.constraints.Past;
 import java.util.Date;
 
 public class User {
@@ -14,13 +16,15 @@ public class User {
     @JsonView(UserSimpleView.class)
     private Long id;
 
+    @MyConstraint(message = "这是一个测试校验注解")
     @JsonView(UserSimpleView.class)
     private String username;
 
-    @NotBlank
+    @NotBlank(message = "密码不能为空")
     @JsonView(UserDetailView.class)
     private String password;
 
+    @Past(message = "生日必须是过去的时间")
     @JsonView(UserSimpleView.class)
     private Date birthday;
 
