@@ -1,0 +1,12 @@
+1.wire mock 使用
+    $. 百度搜索 "wiremock"
+    $. Docs --> Run as a standalone Process
+    $. download wiremock-standalone-x.x.x.jar
+    $. java -jar wiremock-standalone-2.11.0.jar
+    $. WireMock.removeAllMappings(); 清理旧服务
+    $. main函数发布服务, WireMock.stubFor(WireMock.get(WireMock.urlEqualTo(url))
+                                                .willReturn(WireMock
+                                                                .aResponse()
+                                                                .withBody(content)
+                                                                .withStatus(200)))
+    $. OK
