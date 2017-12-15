@@ -1,16 +1,17 @@
 package com.jy.study.spring.security.validator;
 
 import com.jy.study.spring.security.service.HelloService;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 public class MyConstraintValidator implements ConstraintValidator<MyConstraint, Object> {
 
-    //可使用spring的注入
-    @Autowired
     private HelloService helloService;
+
+    public MyConstraintValidator(HelloService helloService) {
+        this.helloService = helloService;
+    }
 
     @Override
     public void initialize(MyConstraint myConstraint) {

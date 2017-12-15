@@ -16,15 +16,16 @@ public class MyUserDetailsService implements UserDetailsService {
 
     private static final Logger logger = LoggerFactory.getLogger(MyUserDetailsService.class);
 
-    @Autowired
     private PasswordEncoder passwordEncoder;
+
+    public MyUserDetailsService(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         logger.info("登录用户名: " + username);
         //根据用户名查找用户信息
-//        return new User(username, "123456", AuthorityUtils.commaSeparatedStringToAuthorityList("admin"));
-        System.out.println("password: " + passwordEncoder.encode("123456"));
         return new User(
             username,
             passwordEncoder.encode("123456"),

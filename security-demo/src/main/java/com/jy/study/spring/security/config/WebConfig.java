@@ -2,9 +2,7 @@ package com.jy.study.spring.security.config;
 
 import com.jy.study.spring.security.filter.ThirdPartyFilter;
 import com.jy.study.spring.security.interceptor.TimeInterceptor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -17,14 +15,23 @@ import java.util.List;
 public class WebConfig extends WebMvcConfigurerAdapter {
 
 
-    @Autowired
     private TimeInterceptor timeInterceptor;
 
+    public WebConfig(TimeInterceptor timeInterceptor) {
+        this.timeInterceptor = timeInterceptor;
+    }
+
+    /**
+     * 添加拦截器
+     * */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
 //        registry.addInterceptor(timeInterceptor);
     }
 
+    /**
+     * 配置异步支持
+     * */
     @Override
     public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
         //用来配置异步请求拦截器
@@ -34,7 +41,10 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         //configurer.setTaskExecutor();
     }
 
-    //    @Bean
+    /**
+     * 配置第三方拦截器
+     * */
+    //@Bean
     public FilterRegistrationBean thirdPartyFilter() {
         FilterRegistrationBean registrationBean = new FilterRegistrationBean();
         ThirdPartyFilter thirdPartyFilter = new ThirdPartyFilter();

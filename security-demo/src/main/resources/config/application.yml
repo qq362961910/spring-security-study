@@ -9,3 +9,8 @@ spring:
 #security:
 #  basic:
 #    enabled: false
+
+application:
+    security:
+        browser:
+            loginPage: "/demo-signIn.html"

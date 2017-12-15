@@ -36,8 +36,8 @@ public class FileController {
             response.addHeader("Content-Disposition", "attachment;filename=test.txt");
             IOUtils.copy(inputStream, outputStream);
             outputStream.flush();
-        }catch (Exception e) {
-
+        } catch (Exception e) {
+            //todo
         }
 
     }
