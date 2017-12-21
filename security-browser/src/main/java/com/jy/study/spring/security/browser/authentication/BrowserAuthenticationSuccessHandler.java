@@ -1,15 +1,12 @@
 package com.jy.study.spring.security.browser.authentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang.StringUtils;
+import com.jy.study.spring.security.security.core.properties.LoginType;
+import com.jy.study.spring.security.security.core.properties.SecurityProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.web.RedirectStrategy;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.savedrequest.RequestCache;
-import org.springframework.security.web.savedrequest.SavedRequest;
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.ServletException;
@@ -19,18 +16,20 @@ import java.io.IOException;
 
 /**
  * 自定义登录成功处理器
+ * SavedRequestAwareAuthenticationSuccessHandler为spring boot 默认处理器
  */
 @Component
-public class BrowserAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
+public class BrowserAuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(BrowserAuthenticationSuccessHandler.class);
 
-    @Autowired
     private ObjectMapper objectMapper;
-    @Autowired
-    private RequestCache requestCache;
-    @Autowired
-    private RedirectStrategy redirectStrategy;
+    private SecurityProperties securityProperties;
+
+    public BrowserAuthenticationSuccessHandler(ObjectMapper objectMapper, SecurityProperties securityProperties) {
+        this.objectMapper = objectMapper;
+        this.securityProperties = securityProperties;
+    }
 
     /**
      * @param authentication 封装认证信息: 认证请求信息, 认证通过以后返回UserDetails等
@@ -38,16 +37,12 @@ public class BrowserAuthenticationSuccessHandler implements AuthenticationSucces
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         logger.info("登录成功");
-        SavedRequest savedRequest = requestCache.getRequest(request, response);
-        if (savedRequest != null) {
-            String targetUrl = savedRequest.getRedirectUrl();
-            if(StringUtils.endsWithIgnoreCase(targetUrl, ".html")) {
-                redirectStrategy.sendRedirect(request, response, savedRequest.getRedirectUrl());
-            }
-            else {
-                response.setContentType("application/json;charset=UTF-8");
-                response.getWriter().write(objectMapper.writeValueAsString(authentication));
-            }
+        if(LoginType.JSON.equals(securityProperties.getBrowser().getLoginType())) {
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().write(objectMapper.writeValueAsString(authentication));
+        }
+        else {
+            super.onAuthenticationSuccess(request, response, authentication);
         }
     }
 }

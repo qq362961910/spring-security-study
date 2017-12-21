@@ -13,9 +13,10 @@ spring:
 #  basic:
 #    enabled: false
 
-#application:
-#    security:
-#        browser:
+application:
+    security:
+        browser:
 #            loginPage: "/demo-signIn.html"
+            loginType: REDIRECT
 
 
