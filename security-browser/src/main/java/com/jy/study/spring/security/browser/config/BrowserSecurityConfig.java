@@ -17,6 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.social.connect.web.SessionStrategy;
+import org.springframework.util.AntPathMatcher;
 
 @Configuration
 public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
@@ -25,15 +26,18 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
     private BrowserAuthenticationSuccessHandler browserAuthenticationSuccessHandler;
     private BrowserAuthenticationFailureHandler browserAuthenticationFailureHandler;
     private SessionStrategy sessionStrategy;
+    private AntPathMatcher antPathMatcher;
 
     public BrowserSecurityConfig(SecurityProperties securityProperties,
                                  BrowserAuthenticationSuccessHandler browserAuthenticationSuccessHandler,
                                  BrowserAuthenticationFailureHandler browserAuthenticationFailureHandler,
-                                 SessionStrategy sessionStrategy) {
+                                 SessionStrategy sessionStrategy,
+                                 AntPathMatcher antPathMatcher) {
         this.securityProperties = securityProperties;
         this.browserAuthenticationSuccessHandler = browserAuthenticationSuccessHandler;
         this.browserAuthenticationFailureHandler = browserAuthenticationFailureHandler;
         this.sessionStrategy = sessionStrategy;
+        this.antPathMatcher = antPathMatcher;
     }
 
     @Override
@@ -41,8 +45,10 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
 
         ValidateCodeFilter validateCodeFilter = new ValidateCodeFilter();
         validateCodeFilter.setAuthenticationFailureHandler(browserAuthenticationFailureHandler);
+        validateCodeFilter.setSecurityProperties(securityProperties);
         validateCodeFilter.setSessionStrategy(sessionStrategy);
-
+        validateCodeFilter.setAntPathMatcher(antPathMatcher);
+        validateCodeFilter.afterPropertiesSet();
         http
             .addFilterBefore(validateCodeFilter, UsernamePasswordAuthenticationFilter.class)
             //表单配置,指定登录页面和登录提交地址
