@@ -15,8 +15,8 @@ spring:
 
 application:
     security:
-        browser:
+#        browser:
 #            loginPage: "/demo-signIn.html"
-            loginType: REDIRECT
+#            loginType: REDIRECT
 
 
