@@ -1,5 +1,6 @@
 package com.jy.study.spring.security.browser.config;
 
+import com.jy.study.spring.security.browser.authentication.BrowserAuthenticationSuccessHandler;
 import com.jy.study.spring.security.security.core.properties.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,9 +18,11 @@ import org.springframework.security.web.savedrequest.RequestCache;
 public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private SecurityProperties securityProperties;
+    private BrowserAuthenticationSuccessHandler browserAuthenticationSuccessHandler;
 
-    public BrowserSecurityConfig(SecurityProperties securityProperties) {
+    public BrowserSecurityConfig(SecurityProperties securityProperties, BrowserAuthenticationSuccessHandler browserAuthenticationSuccessHandler) {
         this.securityProperties = securityProperties;
+        this.browserAuthenticationSuccessHandler = browserAuthenticationSuccessHandler;
     }
 
     @Override
@@ -27,7 +30,7 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
 
         http
             //表单配置,指定登录页面和登录提交地址
-            .formLogin().loginPage("/authentication/require").loginProcessingUrl("/authentication/form")
+            .formLogin().loginPage("/authentication/require").loginProcessingUrl("/authentication/form").successHandler(browserAuthenticationSuccessHandler)
             .and()
             //请求配置,除了指定匹配的路径,拦截所有url登录验证
             .authorizeRequests().antMatchers("/authentication/require", securityProperties.getBrowser().getLoginPage()).permitAll().anyRequest().authenticated()
