@@ -1,14 +1,11 @@
 package com.jy.study.spring.security.security.core.validate.code;
 
-import java.awt.image.BufferedImage;
 import java.time.LocalDateTime;
 
-public class ImageCode {
-
-    /**
-     * 图片
-     * */
-    private BufferedImage image;
+/**
+ * 短信验证码
+ * */
+public class ValidateCode {
 
     /**
      * 验证码
@@ -20,19 +17,11 @@ public class ImageCode {
      * */
     private LocalDateTime expireTime;
 
-    public ImageCode(BufferedImage image, String code, int seconds) {
-        this.image = image;
+    public ValidateCode(String code, int seconds) {
         this.code = code;
         this.expireTime = LocalDateTime.now().plusSeconds(seconds);
     }
 
-    public BufferedImage getImage() {
-        return image;
-    }
-
-    public void setImage(BufferedImage image) {
-        this.image = image;
-    }
 
     public String getCode() {
         return code;

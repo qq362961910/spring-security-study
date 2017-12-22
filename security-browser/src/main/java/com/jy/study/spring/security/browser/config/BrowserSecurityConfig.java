@@ -68,7 +68,7 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             //请求配置,除了指定匹配的路径,拦截所有url登录验证
             .authorizeRequests()
-                .antMatchers("/authentication/require", securityProperties.getBrowser().getLoginPage(), "/code/image")
+                .antMatchers("/authentication/require", securityProperties.getBrowser().getLoginPage(), "/code/*")
                 .permitAll()
                 .anyRequest()
                 .authenticated()

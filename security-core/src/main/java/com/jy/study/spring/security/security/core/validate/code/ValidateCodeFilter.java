@@ -1,6 +1,7 @@
 package com.jy.study.spring.security.security.core.validate.code;
 
 import com.jy.study.spring.security.security.core.properties.SecurityProperties;
+import com.jy.study.spring.security.security.core.validate.code.image.ImageCode;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -62,7 +63,7 @@ public class ValidateCodeFilter extends OncePerRequestFilter implements Initiali
     }
 
     private void validate(ServletWebRequest servletWebRequest) throws ServletRequestBindingException {
-        ImageCode imageCode = (ImageCode)sessionStrategy.getAttribute(servletWebRequest, ValidateCodeController.IMAGE_CODE_KEY);
+        ImageCode imageCode = (ImageCode)sessionStrategy.getAttribute(servletWebRequest, ValidateCodeProcessor.SESSION_KEY_PREFIX + "image");
         String code = ServletRequestUtils.getStringParameter(servletWebRequest.getRequest(), "code");
         if(StringUtils.isBlank(code)) {
             throw new ValidateCodeException("验证码不能为空");
@@ -71,13 +72,13 @@ public class ValidateCodeFilter extends OncePerRequestFilter implements Initiali
             throw new ValidateCodeException("验证码不存在");
         }
         if(imageCode.isExpired()) {
-            sessionStrategy.removeAttribute(servletWebRequest, ValidateCodeController.IMAGE_CODE_KEY);
+            sessionStrategy.removeAttribute(servletWebRequest, ValidateCodeProcessor.SESSION_KEY_PREFIX + "image");
             throw new ValidateCodeException("验证码已过期");
         }
         if(!StringUtils.equals(imageCode.getCode(), code)) {
             throw new ValidateCodeException("验证码不匹配");
         }
-        sessionStrategy.removeAttribute(servletWebRequest, ValidateCodeController.IMAGE_CODE_KEY);
+        sessionStrategy.removeAttribute(servletWebRequest, ValidateCodeProcessor.SESSION_KEY_PREFIX + "image");
     }
 
     public AuthenticationFailureHandler getAuthenticationFailureHandler() {
