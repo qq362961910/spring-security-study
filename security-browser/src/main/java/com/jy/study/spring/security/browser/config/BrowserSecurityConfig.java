@@ -4,41 +4,44 @@ import com.jy.study.spring.security.browser.authentication.BrowserAuthentication
 import com.jy.study.spring.security.browser.authentication.BrowserAuthenticationSuccessHandler;
 import com.jy.study.spring.security.security.core.properties.SecurityProperties;
 import com.jy.study.spring.security.security.core.validate.code.ValidateCodeFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.social.connect.web.SessionStrategy;
 import org.springframework.util.AntPathMatcher;
 
+import javax.sql.DataSource;
+
 @Configuration
 public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
 
+    @Autowired
     private SecurityProperties securityProperties;
+    @Autowired
     private BrowserAuthenticationSuccessHandler browserAuthenticationSuccessHandler;
+    @Autowired
     private BrowserAuthenticationFailureHandler browserAuthenticationFailureHandler;
+    @Autowired
     private SessionStrategy sessionStrategy;
+    @Autowired
     private AntPathMatcher antPathMatcher;
-
-    public BrowserSecurityConfig(SecurityProperties securityProperties,
-                                 BrowserAuthenticationSuccessHandler browserAuthenticationSuccessHandler,
-                                 BrowserAuthenticationFailureHandler browserAuthenticationFailureHandler,
-                                 SessionStrategy sessionStrategy,
-                                 AntPathMatcher antPathMatcher) {
-        this.securityProperties = securityProperties;
-        this.browserAuthenticationSuccessHandler = browserAuthenticationSuccessHandler;
-        this.browserAuthenticationFailureHandler = browserAuthenticationFailureHandler;
-        this.sessionStrategy = sessionStrategy;
-        this.antPathMatcher = antPathMatcher;
-    }
+    @Autowired
+    private DataSource dataSource;
+    @Autowired
+    private UserDetailsService userDetailsService;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -58,6 +61,11 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
                 .successHandler(browserAuthenticationSuccessHandler)
                 .failureHandler(browserAuthenticationFailureHandler)
             .and()
+            .rememberMe()
+                .tokenRepository(persistentTokenRepository())
+                .tokenValiditySeconds(securityProperties.getBrowser().getRememberMeSeconds())
+                .userDetailsService(userDetailsService)
+            .and()
             //请求配置,除了指定匹配的路径,拦截所有url登录验证
             .authorizeRequests()
                 .antMatchers("/authentication/require", securityProperties.getBrowser().getLoginPage(), "/code/image")
@@ -76,6 +84,14 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public PersistentTokenRepository persistentTokenRepository() {
+        JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
+        tokenRepository.setDataSource(dataSource);
+//        tokenRepository.setCreateTableOnStartup(true);
+        return tokenRepository;
     }
 
     /**
